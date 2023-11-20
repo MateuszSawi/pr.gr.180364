@@ -1,23 +1,33 @@
-import logo from './logo.svg';
 import './App.css';
+import { Routes, Route } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+
+import Categories from './components/Categories/Categories';
+import QuestionPage from './components/QuestionPage/QuestionPage';
+import Score from './components/Score/Score';
 
 function App() {
+
+  const [questionsQuantity, setQuestionsQuantity] = useState(0);
+  const [correctAnswersCount, setCorrectAnswersCount] = useState(0);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className='container'>
+      <Routes>
+        <Route path="/" element={<Categories />} />
+        
+        <Route path="/:category" element={<QuestionPage
+          setQuestionsQuantity={setQuestionsQuantity}
+          setCorrectAnswersCount={setCorrectAnswersCount}
+        />} />
+
+        <Route path="/:category/wynik" element={<Score 
+          questionsQuantity={questionsQuantity}
+          correctAnswersCount={correctAnswersCount}
+          setQuestionsQuantity={setQuestionsQuantity}
+          setCorrectAnswersCount={setCorrectAnswersCount}
+        />} />
+      </Routes>
     </div>
   );
 }
