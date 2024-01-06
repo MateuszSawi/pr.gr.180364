@@ -14,19 +14,15 @@ function QuestionPage(props) {
   const { category } = useParams();
 
   useEffect(() => {
-    // axios.get("http://localhost:8000/get_info/", { 
-    //     params: {
-    //         category : category
-    //     }
-    //   })
-    //   .then(response => {
-    //     setQuestions(response.data.questions);  
-    //     console.log(questions)
-    //     setQuestionsQuantity(questions.length)
-    //   })
-    //   .catch(error => {
-    //     console.error(error);
-    //   });
+    axios.get(`http://localhost:8000/api/category-questions/?category_id=${category}`)
+      .then(response => {
+        // setQuestions(response.data.questions);  
+        console.log(response)
+        // setQuestionsQuantity(questions.length)
+      })
+      .catch(error => {
+        console.error(error);
+      });
 
       setQuestions([
         {

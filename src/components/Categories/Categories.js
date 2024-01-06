@@ -5,12 +5,30 @@ import { Link, useNavigate, useParams  } from 'react-router-dom';
 function CategoryTile() {
 
   const categories = [
-    'Elektronika',
-    'Telekomunikacja',
-    'Informatyka',
-    'Mechanika',
-    'Fizyka',
-    'Matematyka'
+    {
+      category: "Elektronika", 
+      category_id: 1
+    },
+    {
+      category: "Telekomunikacja", 
+      category_id: 2
+    },
+    {
+      category: "Informatyka", 
+      category_id: 3
+    },
+    {
+      category: "Mechanika", 
+      category_id: 4
+    },
+    {
+      category: "Fizyka", 
+      category_id: 5
+    },
+    {
+      category: "Matematyka", 
+      category_id: 6
+    }
   ]
 
   const navigate = useNavigate();
@@ -22,11 +40,11 @@ function CategoryTile() {
   return (
     <div className={styles.wrapper}>
       <div className={styles.cardsBox}>
-        {categories.map((category) => (
+        {categories.map((item) => (
           <div className={styles.categoryCard} 
-            onClick={() => handleLinkClick(category)}
+            onClick={() => handleLinkClick(item.category_id)}
           >
-            <p>{category}</p>
+            <p>{item.category}</p>
           </div>
         ))}
       </div>

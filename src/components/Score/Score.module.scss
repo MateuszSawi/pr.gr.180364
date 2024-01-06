@@ -1,5 +1,5 @@
 .wrapper {
-  height: 100vh;
+  min-height: 100vh;
   width: 100vw;
   display: flex;
   justify-content: center;
@@ -28,4 +28,9 @@
       font: 500 21px/25px 'Roboto', Arial, sans-serif;
     }
   }
+}
+
+.questionCard {
+  margin-top: 5px;
+  border-bottom: solid 1px #000;
 }
