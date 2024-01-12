@@ -8,41 +8,32 @@ function Score(props) {
 
   const navigate = useNavigate();
 
-  const handleLinkClick = (category) => {
+  const handleLinkClick = () => {
     props.setQuestionsQuantity(0);
     props.setCorrectAnswersCount(0);
     navigate("/");
   }
 
-  const questions = [
-    {
-      q: 'Przykładowe pytanie 1',
-      ans1: 'Odpowiedź 1',
-      ans2: 'Odpowiedź 2',
-      ans3: 'Odpowiedź 3',
-      correctans: 'Odpowiedź 1'
-    },
-    {
-      q: 'Przykładowe pytanie 2',
-      ans1: 'Odpowiedź 1',
-      ans2: 'Odpowiedź 2',
-      ans3: 'Odpowiedź 3',
-      correctans: 'Odpowiedź 1'
-    }
-  ];
+  const questions = props.questions || [];
     
   return (
     <div className={styles.wrapper}>
       <h1>Twój wynik</h1>
-      <p>{props.correctAnswersCount}/{props.questionsQuantity}</p>
-      <button onClick={() => handleLinkClick()}>Przejdź do kategorii</button>
+      <p>{props.correctAnswersCount}/{questions.length}</p>
+      <button onClick={handleLinkClick}>Przejdź do kategorii</button>
 
-        {questions.map((question, index) => (
-          <div className={styles.questionCard}>
-            <p>{index + 1}. {question.q}</p>
-            <p>Poprawna odpowiedź: <strong>{question.correctans}</strong></p>
-          </div>
-        ))}
+      {questions.map((question, index) => (
+        <div key={index} className={styles.questionCard}>
+          <p>{index + 1}. {question.question_text}</p>
+          {question.answers.map(ans => (
+            <>
+              {ans.is_correct &&
+                <p>Poprawna odpowiedź: <strong>{ans.answer_text}</strong></p>
+              }
+            </>
+          ))}
+        </div>
+      ))}
     </div>
   );
 }

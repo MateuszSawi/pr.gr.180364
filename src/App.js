@@ -10,6 +10,7 @@ function App() {
 
   const [questionsQuantity, setQuestionsQuantity] = useState(0);
   const [correctAnswersCount, setCorrectAnswersCount] = useState(0);
+  const [questions, setQuestions] = useState([]);
 
   return (
     <div className='container'>
@@ -19,6 +20,9 @@ function App() {
         <Route path="/:category" element={<QuestionPage
           setQuestionsQuantity={setQuestionsQuantity}
           setCorrectAnswersCount={setCorrectAnswersCount}
+
+          questions={questions}
+          setQuestions={setQuestions}
         />} />
 
         <Route path="/:category/wynik" element={<Score 
@@ -26,6 +30,9 @@ function App() {
           correctAnswersCount={correctAnswersCount}
           setQuestionsQuantity={setQuestionsQuantity}
           setCorrectAnswersCount={setCorrectAnswersCount}
+
+          questions={questions}
+          setQuestions={setQuestions}
         />} />
       </Routes>
     </div>

@@ -4,7 +4,8 @@ import { Link, useNavigate, useParams  } from 'react-router-dom';
 import axios from 'axios';
 
 function QuestionPage(props) {
-  const [questions, setQuestions] = useState([]);
+  // const [questions, setQuestions] = useState([]);
+  const [answers, setAnswers] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [isAnswered, setIsAnswered] = useState(false);
@@ -13,99 +14,99 @@ function QuestionPage(props) {
   const navigate = useNavigate();
   const { category } = useParams();
 
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
-    axios.get(`http://localhost:8000/api/category-questions/?category_id=${category}`)
-      .then(response => {
-        // setQuestions(response.data.questions);  
-        console.log(response)
-        // setQuestionsQuantity(questions.length)
-      })
-      .catch(error => {
+    props.setCorrectAnswersCount(0)
+  }, []);
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const response = await axios.get(`http://localhost:8000/api/category-questions/?category_id=${category}`);
+        setIsLoading(true); // Włącz loader
+        setTimeout(() => {
+          const questionsWithShuffledAnswers = response.data.map(question => ({
+            ...question,
+            answers: shuffleArray([...question.answers])
+          }));
+          props.setQuestions(questionsWithShuffledAnswers);
+          setCurrentQuestionIndex(0);
+          setIsLoading(false); // Wyłącz loader po mieszaniu
+        }, 500);
+      } catch (error) {
         console.error(error);
-      });
-
-      setQuestions([
-        {
-          q: 'Przykładowe pytanie 1',
-          ans1: 'Odpowiedź 1',
-          ans2: 'Odpowiedź 2',
-          ans3: 'Odpowiedź 3',
-          correctans: 'Odpowiedź 1'
-        },
-        {
-          q: 'Przykładowe pytanie 2',
-          ans1: 'Odpowiedź 1',
-          ans2: 'Odpowiedź 2',
-          ans3: 'Odpowiedź 3',
-          correctans: 'Odpowiedź 1'
-        }
-      ]);
-
-        setCurrentQuestionIndex(0);
-        setSelectedAnswer(null);
-        setIsAnswered(false);
-
-        console.log(questions.length)
+        setIsLoading(false);
+      }
+    };
+    
+    loadData();
   }, [category]);
+  
+  const handleAnswer = (selectedAnswerId) => {
+    setSelectedAnswer(selectedAnswerId);
+    const currentQuestion = props.questions[currentQuestionIndex];
+    const isCorrect = currentQuestion.answers.find(answer => answer.answer_id === selectedAnswerId).is_correct;
 
-  props.setQuestionsQuantity(questions.length);
-
-  const handleAnswer = (answer) => {
-    setSelectedAnswer(answer);
     setIsAnswered(true);
-    if (answer === questions[currentQuestionIndex].correctans) {
-      console.log('DOBRZE');
+    if (isCorrect) {
       props.setCorrectAnswersCount(count => count + 1);
     }
 
     setTimeout(() => {
-      if (currentQuestionIndex < questions.length - 1) {
+      if (currentQuestionIndex < props.questions.length - 1) {
         setCurrentQuestionIndex(currentIndex => currentIndex + 1);
         setIsAnswered(false);
         setSelectedAnswer(null);
       } else {
-        // Przekierowanie do strony wyników
         navigate(`/${category}/wynik`);
       }
     }, 2000);
   };
 
-  const currentQuestion = questions[currentQuestionIndex];
+  if (props.questions.length === 0 || currentQuestionIndex >= props.questions.length) {
+    return <div>Loading...</div>;
+  }
 
-  // Sprawdź, czy pytanie istnieje
-  if (!currentQuestion) return <div>Loading...</div>;
+  const currentQuestion = props.questions[currentQuestionIndex];
 
-  // Teraz możesz bezpiecznie sprawdzić, czy odpowiedź jest poprawna
-  const isCorrectAnswer = selectedAnswer === currentQuestion.correctans;
-
+  function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  }
   
-
-  const handleLinkClick = (category) => {
-    navigate(`/${category}/wynik`);
+  if (isLoading) {
+    return (
+    <div className={styles.wrapper}>
+      <div className={styles.loader}></div>
+    </div>
+    )
   }
 
   return (
     <div className={styles.wrapper}>
-      <h1>{category}</h1>
-      <h2>{currentQuestion.q}</h2>
-      {['ans1', 'ans2', 'ans3'].map(ans => {
-
-      return (
+      <h1>Pytanie {currentQuestionIndex + 1}</h1>
+      <h2>{currentQuestion.question_text}</h2>
+      {currentQuestion.answers.map(ans => (
         <button
-          key={ans}
-          onClick={() => handleAnswer(currentQuestion[ans])}
+          key={ans.answer_id}
+          onClick={() => handleAnswer(ans.answer_id)}
           className={
-            isAnswered && selectedAnswer === currentQuestion[ans]
-              ? (isCorrectAnswer ? styles.correct : styles.incorrect)
+            isAnswered && selectedAnswer === ans.answer_id
+              ? (ans.is_correct ? styles.correct : styles.incorrect)
               : ''
           }
           disabled={isAnswered}
         >
-          <p>{currentQuestion[ans]}</p>
+          <p>{ans.answer_text}</p>
         </button>
-        )})}
+      ))}
     </div>
   );
 }
+
 
 export default QuestionPage;
